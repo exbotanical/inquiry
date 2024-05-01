@@ -1,0 +1,91 @@
+{
+  "name": "joyce",
+  "version": "0.0.0-development",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/exbotanical/joyce.git"
+  },
+  "author": "Matthew Zito <exbotanical@protonmail.com>",
+  "files": [
+    "dist/"
+  ],
+  "exports": {
+    "require": "./dist/joyce.cjs.js",
+    "import": "./dist/joyce.es.js"
+  },
+  "main": "./dist/joyce.cjs.js",
+  "browser": "./dist/joyce.umd.js",
+  "module": "./dist/joyce.es.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">= 10"
+  },
+  "scripts": {
+    "build": "pnpm clean && tsc && rollup -c && rimraf .build",
+    "clean": "rimraf coverage dist .build tsconfig.tsbuildinfo",
+    "docgen": "api-extractor run --local && api-documenter markdown -i temp -o docs",
+    "format": "prettier --write \"**/*.{ts,md}\"",
+    "lint": "eslint --ext .js,.ts,.json --fix .",
+    "prerelease": "pnpm pack && tar -xvzf *.tgz && rimraf package *.tgz",
+    "semantic-release": "semantic-release",
+    "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./src/**/*.test.ts\"",
+    "test:dev": "glob -c \"node --loader tsx --no-warnings --test --watch\" \"./src/**/*.test.ts\""
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "pnpm lint",
+      "pnpm test",
+      "git add ."
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/exbotanical/joyce/issues"
+  },
+  "homepage": "https://github.com/exbotanical/joyce#readme",
+  "devDependencies": {
+    "@babel/cli": "7.23.0",
+    "@babel/core": "7.23.2",
+    "@babel/preset-env": "7.23.2",
+    "@babel/preset-typescript": "7.23.2",
+    "@commitlint/cli": "^17.7.2",
+    "@commitlint/config-conventional": "^17.7.0",
+    "@magister_zito/eslint-config-typescript": "^0.15.0",
+    "@magister_zito/prettier-config": "^0.0.5",
+    "@microsoft/api-documenter": "^7.23.9",
+    "@microsoft/api-extractor": "^7.38.0",
+    "@rollup/plugin-babel": "6.0.4",
+    "@rollup/plugin-commonjs": "25.0.5",
+    "@rollup/plugin-node-resolve": "15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "11.1.5",
+    "@types/node": "^20.8.6",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "8.51.0",
+    "eslint-config-prettier": "9.0.0",
+    "glob": "^10.3.10",
+    "husky": "8.0.3",
+    "lint-staged": "14.0.1",
+    "prettier": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "rollup": "4.0.2",
+    "rollup-plugin-dts": "6.1.0",
+    "semantic-release": "^22.0.5",
+    "tsx": "^3.13.0",
+    "typescript": "5.2.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

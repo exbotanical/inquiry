@@ -1,0 +1,20 @@
+{
+  "include": ["src", "*.ts"],
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "declaration": true,
+    "declarationDir": ".build",
+    "emitDeclarationOnly": true,
+    "module": "ESNext",
+    "lib": ["ESNext"],
+    "target": "ES2015",
+    "strict": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
