@@ -1,6 +1,7 @@
-import { describe, it } from 'node:test'
-import { Matcher, Queryable } from '.'
 import assert from 'node:assert'
+import { describe, it } from 'node:test'
+
+import { Matcher, View } from '.'
 
 interface Animal {
   type: string
@@ -69,9 +70,9 @@ const complex: ComplexField[] = [complex1, complex2, complex3]
 
 describe('api', () => {
   it('runs a basic query', () => {
-    const result = new Queryable(animals)
+    const result = new View(animals)
       .get()
-      .where('type', Matcher.not('elephant'))
+      .where('type', Matcher.not(Matcher.eq('elephant')))
       .run()
 
     assert.strictEqual(result.length, 2)
@@ -80,11 +81,11 @@ describe('api', () => {
   })
 
   it('runs a basic AND query', () => {
-    const result = new Queryable(animals)
+    const result = new View(animals)
       .get()
-      .where('type', Matcher.not('elephant'))
+      .where('type', Matcher.not(Matcher.eq('elephant')))
       .and()
-      .where('name', Matcher.not('snebby'))
+      .where('name', Matcher.not(Matcher.eq('snebby')))
       .run()
 
     assert.strictEqual(result.length, 1)
@@ -92,7 +93,7 @@ describe('api', () => {
   })
 
   it('runs a basic OR query', () => {
-    const result = new Queryable(animals)
+    const result = new View(animals)
       .get()
       .where('type', Matcher.eq('elephant'))
       .or()
@@ -106,11 +107,11 @@ describe('api', () => {
   })
 
   it('runs a basic compound query', () => {
-    const result = new Queryable(animals)
+    const result = new View(animals)
       .get()
       .where('type', Matcher.eq('elephant'))
       .and()
-      .where('name', Matcher.not('bobo2'))
+      .where('name', Matcher.not(Matcher.eq('bobo2')))
       .or()
       .where('name', Matcher.eq('snebby'))
       .run()
@@ -121,7 +122,7 @@ describe('api', () => {
   })
 
   it('runs a compound query that distills into no results', () => {
-    const result = new Queryable(animals)
+    const result = new View(animals)
       .get()
       .where('type', Matcher.eq('elephant'))
       .and()
@@ -132,13 +133,13 @@ describe('api', () => {
   })
 
   it('runs a complex compound query', () => {
-    const result = new Queryable(complex)
+    const result = new View(complex)
       .get()
       .where('age', Matcher.gt(33))
       .or()
       .where('age', Matcher.lt(22))
       .and()
-      .where('hometown.city', Matcher.not('London'))
+      .where('hometown.city', Matcher.not(Matcher.eq('London')))
       .run()
 
     assert.strictEqual(result.length, 1)
