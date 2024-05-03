@@ -68,7 +68,94 @@ const complex3 = {
 
 const complex: ComplexField[] = [complex1, complex2, complex3]
 
-describe('api', () => {
+interface LargeConfig {
+  id: string
+  name: string
+  timestamp: number
+  owner: {
+    teamName: string
+    email: string
+  }
+  configs: { id: string; type: string }[]
+  numbers: number[]
+  unit: number
+}
+
+const configs: LargeConfig[] = [
+  {
+    id: '123',
+    name: 'config1',
+    timestamp: Date.now(),
+    owner: {
+      email: 'a@a.com',
+      teamName: 'a team',
+    },
+    configs: [
+      {
+        id: 'k8s',
+        type: 'deployment',
+      },
+      {
+        id: 'node',
+        type: 'runtime',
+      },
+    ],
+    numbers: [8, 13, 16, 21, 42],
+    unit: 1333412290,
+  },
+  {
+    id: '456',
+    name: 'config2',
+    timestamp: Date.now(),
+    owner: {
+      email: 'b@b.com',
+      teamName: 'b team',
+    },
+    configs: [
+      {
+        id: 'k8s',
+        type: 'deployment',
+      },
+      {
+        id: 'ecs',
+        type: 'container',
+      },
+      {
+        id: 'lambda',
+        type: 'srv',
+      },
+      {
+        id: 'cdk',
+        type: 'infra',
+      },
+      {
+        id: 'smithy',
+        type: 'contract',
+      },
+    ],
+    numbers: [9, 13, 1],
+    unit: 10092993011,
+  },
+  {
+    id: '789',
+    name: 'config3',
+    timestamp: Date.now(),
+    owner: {
+      email: 'c@c.com',
+      teamName: 'c team',
+    },
+    configs: [
+      {
+        id: 'node',
+        type: 'runtime',
+      },
+    ],
+    numbers: [36, 35, 36],
+    unit: 4323412881,
+  },
+]
+
+describe('fluent query api', () => {
   it('runs a basic query', () => {
     const result = new View(animals)
       .get()
@@ -144,5 +231,22 @@ describe('api', () => {
 
     assert.strictEqual(result.length, 1)
     assert.deepEqual(result[0], complex1)
+  })
+
+  it('runs a complex compound query (again)', () => {
+    const result = new View(configs)
+      .get()
+      .where('timestamp', Matcher.lt(Date.now()))
+      .and()
+      .where(
+        'configs',
+        Matcher.contains({
+          id: 'node',
+          type: 'runtime',
+        }),
+      )
+      .run()
+
+    console.log({ result })
   })
 })

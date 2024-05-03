@@ -292,4 +292,13 @@ describe('matcher functions', () => {
       assert.strictEqual(ret, true)
     })
   })
+
+  describe('contains', () => {
+    it('matches on contains', () => {
+      const fn = Matcher.contains(1)
+      const ret = fn({ p: [1, 2, 3], n: 1, w: [], r: { t: [] } }, 'r.t')
+
+      assert.strictEqual(ret, true)
+    })
+  })
 })

@@ -78,9 +78,9 @@ describe('utils test', () => {
         b: null,
       }
 
-      assert.strictEqual(getField<O>(o, 'b'), null)
-      assert.strictEqual(getField<O>(o, 'b.d'), undefined)
-      assert.strictEqual(getField<O>(o, 'b.d.e'), undefined)
+      assert.strictEqual(getField(o, 'b'), null)
+      assert.strictEqual(getField(o, 'b.d'), undefined)
+      assert.strictEqual(getField(o, 'b.d.e'), undefined)
     })
   })
 })

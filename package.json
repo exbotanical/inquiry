@@ -1,24 +1,24 @@
 {
-  "name": "joyce",
+  "name": "inquire",
   "version": "0.0.0-development",
   "description": "",
   "keywords": [],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/exbotanical/joyce.git"
+    "url": "https://github.com/exbotanical/inquire.git"
   },
   "author": "Matthew Zito <exbotanical@protonmail.com>",
   "files": [
     "dist/"
   ],
   "exports": {
-    "require": "./dist/joyce.cjs.js",
-    "import": "./dist/joyce.es.js"
+    "require": "./dist/inquire.cjs.js",
+    "import": "./dist/inquire.es.js"
   },
-  "main": "./dist/joyce.cjs.js",
-  "browser": "./dist/joyce.umd.js",
-  "module": "./dist/joyce.es.js",
+  "main": "./dist/inquire.cjs.js",
+  "browser": "./dist/inquire.umd.js",
+  "module": "./dist/inquire.es.js",
   "types": "dist/index.d.ts",
   "engines": {
     "node": ">= 10"
@@ -47,9 +47,9 @@
     ]
   },
   "bugs": {
-    "url": "https://github.com/exbotanical/joyce/issues"
+    "url": "https://github.com/exbotanical/inquire/issues"
   },
-  "homepage": "https://github.com/exbotanical/joyce#readme",
+  "homepage": "https://github.com/exbotanical/inquire#readme",
   "devDependencies": {
     "@babel/cli": "7.23.0",
     "@babel/core": "7.23.2",

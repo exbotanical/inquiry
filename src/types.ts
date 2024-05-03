@@ -7,27 +7,31 @@ export type Predicate<T> = (
   field: Path<UnIndexed<T>>,
 ) => boolean
 
-type IsAny<T> = unknown extends T
-  ? [keyof T] extends [never]
-    ? false
-    : true
-  : false
+export type Path<T> =
+  T extends Array<infer U>
+    ? `${Path<U>}`
+    : T extends object
+      ? {
+          [K in keyof T & (string | number)]: K extends string
+            ? `${K}` | `${K}.${Path<T[K]>}`
+            : never
+        }[keyof T & (string | number)]
+      : never
 
-type PathImpl<T, Key extends keyof T> = Key extends string
-  ? IsAny<T[Key]> extends true
-    ? never
-    : T[Key] extends Record<string, any>
-    ?
-        | `${Key}.${Exclude<keyof T[Key], keyof any[]> & string}`
-        | `${Key}.${PathImpl<T[Key], Exclude<keyof T[Key], keyof any[]>> &
-            string}`
+export type FieldTypeAtPath<
+  T,
+  Path extends string,
+> = Path extends `${infer Key}.${infer Rest}`
+  ? Key extends keyof T
+    ? FieldTypeAtPath<T[Key], Rest>
     : never
-  : never
+  : Path extends keyof T
+    ? T[Path]
+    : never
 
-export type Path<T> = keyof T extends string
-  ? PathImpl<T, keyof T> | keyof T extends infer P
-    ? P extends string | keyof T
-      ? P
-      : keyof T
-    : keyof T
-  : never
+type IsArray<T> = T extends any[] ? true : false
+
+export type FieldAndArrayCheck<T, Path extends string> = {
+  fieldType: FieldTypeAtPath<T, Path>
+  isArray: IsArray<FieldTypeAtPath<T, Path>>
+}
