@@ -6,6 +6,40 @@
 [![npm version](https://badge.fury.io/js/inquire.svg)](https://badge.fury.io/js/inquire)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+```ts
+interface LargeConfig {
+  id: string
+  name: string
+  timestamp: number
+  owner: {
+    teamName: string
+    email: string
+  }
+  configs: { id: string; type: string }[]
+  numbers: number[]
+  unit: number
+}
+
+const configs: LargeConfig[] = [ ... ]
+
+const result = new View(configs)
+  .get()
+  .where('timestamp', { lt: Date.now() })
+  .and()
+  .where('configs', {
+    contains: {
+      id: 'node',
+      type: 'runtime',
+    },
+  })
+  .run()
+
+result.length // 2
+result[0] // configs[0]
+result[1] // configs[2]
+```
+
+
 ## Table of Contents
 
 - [Install](#install)
@@ -18,27 +52,9 @@
 npm install inquire
 ```
 
-OR
-
-```bash
-yarn add inquire
-```
-
 ### <a name="support"></a> Supported Environments
 
 `inquire` currently supports UMD, CommonJS (node versions >= 10), and ESM build-targets
-
-Commonjs:
-
-```js
-const { isDefined } = require('inquire')
-```
-
-ESM:
-
-```js
-import { isDefined } from 'inquire'
-```
 
 ## <a name="docs"></a> Documentation
 
