@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from 'util'
 import { Path, Predicate, UnIndexed } from './types'
 import { getField } from './utils'
 
@@ -60,17 +61,21 @@ export class Matcher {
 
   // TODO: type-check - fieldPath must correlate to an array type
   // TODO: type-check - `to` must match the same type as el[fieldPath]
-  static contains<
-    T extends Record<PropertyKey, any>,
-    R = UnIndexed<T>[keyof UnIndexed<T>],
-  >(to: R extends Array<any> ? R[number] : never) {
+  static contains<T>(that: T) {
     return <T extends Record<PropertyKey, any>>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => {
       const f = getField(el, fieldPath)
+      if (typeof f === 'string') {
+        return f.includes(that)
+      }
 
-      return Array.isArray(f) ? (f as Array<UnIndexed<T>>).includes(to) : false
+      if (Array.isArray(f)) {
+        return (f as Array<T>).some(ff => isDeepStrictEqual(ff, that))
+      }
+
+      return false
     }
   }
 }

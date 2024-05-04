@@ -294,9 +294,42 @@ describe('matcher functions', () => {
   })
 
   describe('contains', () => {
-    it('matches on contains', () => {
+    it('matches a list of numbers on contains', () => {
       const fn = Matcher.contains(1)
-      const ret = fn({ p: [1, 2, 3], n: 1, w: [], r: { t: [] } }, 'r.t')
+      const ret = fn({ p: [1, 2, 3], n: 1, w: [], r: { t: [12, 1] } }, 'r.t')
+
+      assert.strictEqual(ret, true)
+    })
+
+    it('matches a list of strings on contains', () => {
+      const fn = Matcher.contains('hello')
+      const ret = fn(
+        { p: [1, 2, 3], n: 1, w: ['a', 'hello', 'goodbye'], r: { t: [12, 1] } },
+        'w',
+      )
+
+      assert.strictEqual(ret, true)
+    })
+
+    it('matches an object on contains', () => {
+      const fn = Matcher.contains({ a: 1, b: 2, c: { d: 3 } })
+      const ret = fn(
+        {
+          p: [1, 2, 3],
+          n: 1,
+          w: ['a', 'hello', 'goodbye'],
+          r: { t: [12, 1] },
+          q: {
+            p: [
+              { x: 5, y: 6 },
+              { p: ['n'], q: 'query' },
+              { a: 1, b: 2, c: { d: 3 } },
+              { dubliners: 'ulysses', yyy: 'zzz' },
+            ],
+          },
+        },
+        'q.p',
+      )
 
       assert.strictEqual(ret, true)
     })

@@ -1,14 +1,14 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
 
-import { Matcher, View } from '.'
+import { View } from '.'
 
 interface Animal {
   type: string
   name: string
 }
 
-const animals: Animal[] = [
+const animals: Array<Animal> = [
   { type: 'elephant', name: 'bobo' },
   { type: 'elephant', name: 'bobo2' },
   { type: 'snake', name: 'snebby' },
@@ -66,7 +66,7 @@ const complex3 = {
   },
 }
 
-const complex: ComplexField[] = [complex1, complex2, complex3]
+const complex: Array<ComplexField> = [complex1, complex2, complex3]
 
 interface LargeConfig {
   id: string
@@ -76,12 +76,12 @@ interface LargeConfig {
     teamName: string
     email: string
   }
-  configs: { id: string; type: string }[]
-  numbers: number[]
+  configs: Array<{ id: string; type: string }>
+  numbers: Array<number>
   unit: number
 }
 
-const configs: LargeConfig[] = [
+const configs: Array<LargeConfig> = [
   {
     id: '123',
     name: 'config1',
@@ -159,7 +159,7 @@ describe('fluent query api', () => {
   it('runs a basic query', () => {
     const result = new View(animals)
       .get()
-      .where('type', Matcher.not(Matcher.eq('elephant')))
+      .where('type', { not: { eq: 'elephant' } })
       .run()
 
     assert.strictEqual(result.length, 2)
@@ -170,9 +170,9 @@ describe('fluent query api', () => {
   it('runs a basic AND query', () => {
     const result = new View(animals)
       .get()
-      .where('type', Matcher.not(Matcher.eq('elephant')))
+      .where('type', { not: { eq: 'elephant' } })
       .and()
-      .where('name', Matcher.not(Matcher.eq('snebby')))
+      .where('name', { not: { eq: 'snebby' } })
       .run()
 
     assert.strictEqual(result.length, 1)
@@ -182,9 +182,9 @@ describe('fluent query api', () => {
   it('runs a basic OR query', () => {
     const result = new View(animals)
       .get()
-      .where('type', Matcher.eq('elephant'))
+      .where('type', { eq: 'elephant' })
       .or()
-      .where('name', Matcher.eq('snebby'))
+      .where('name', { eq: 'snebby' })
       .run()
 
     assert.strictEqual(result.length, 3)
@@ -196,11 +196,11 @@ describe('fluent query api', () => {
   it('runs a basic compound query', () => {
     const result = new View(animals)
       .get()
-      .where('type', Matcher.eq('elephant'))
+      .where('type', { eq: 'elephant' })
       .and()
-      .where('name', Matcher.not(Matcher.eq('bobo2')))
+      .where('name', { not: { eq: 'bobo2' } })
       .or()
-      .where('name', Matcher.eq('snebby'))
+      .where('name', { eq: 'snebby' })
       .run()
 
     assert.strictEqual(result.length, 2)
@@ -211,9 +211,9 @@ describe('fluent query api', () => {
   it('runs a compound query that distills into no results', () => {
     const result = new View(animals)
       .get()
-      .where('type', Matcher.eq('elephant'))
+      .where('type', { eq: 'elephant' })
       .and()
-      .where('type', Matcher.eq('snake'))
+      .where('type', { eq: 'snake' })
       .run()
 
     assert.strictEqual(result.length, 0)
@@ -222,11 +222,11 @@ describe('fluent query api', () => {
   it('runs a complex compound query', () => {
     const result = new View(complex)
       .get()
-      .where('age', Matcher.gt(33))
+      .where('age', { gt: 33 })
       .or()
-      .where('age', Matcher.lt(22))
+      .where('age', { lt: 22 })
       .and()
-      .where('hometown.city', Matcher.not(Matcher.eq('London')))
+      .where('hometown.city', { not: { eq: 'London' } })
       .run()
 
     assert.strictEqual(result.length, 1)
@@ -236,17 +236,18 @@ describe('fluent query api', () => {
   it('runs a complex compound query (again)', () => {
     const result = new View(configs)
       .get()
-      .where('timestamp', Matcher.lt(Date.now()))
+      .where('timestamp', { lt: Date.now() })
       .and()
-      .where(
-        'configs',
-        Matcher.contains({
+      .where('configs', {
+        contains: {
           id: 'node',
           type: 'runtime',
-        }),
-      )
+        },
+      })
       .run()
 
-    console.log({ result })
+    assert.strictEqual(result.length, 2)
+    assert.deepEqual(result[0], configs[0])
+    assert.deepEqual(result[1], configs[2])
   })
 })
