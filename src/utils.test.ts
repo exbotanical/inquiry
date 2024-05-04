@@ -1,6 +1,7 @@
-import { describe, it } from 'node:test'
-import { getField } from './utils'
 import assert from 'node:assert'
+import { describe, it } from 'node:test'
+
+import { getField } from './utils'
 
 describe('utils test', () => {
   describe('getField', () => {

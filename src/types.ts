@@ -1,6 +1,6 @@
 export type Conjunction = 'and' | 'or'
 
-export type UnIndexed<T> = T extends Array<any> ? T[number] : T
+export type UnIndexed<T> = T extends any[] ? T[number] : T
 
 export type Predicate<T> = (
   el: UnIndexed<T>,
@@ -8,14 +8,14 @@ export type Predicate<T> = (
 ) => boolean
 
 export type Path<T> =
-  T extends Array<any>
+  T extends any[]
     ? never
     : T extends object
       ? {
-          [K in keyof T & (string | number)]: K extends string
-            ? `${K}` | `${K}.${Path<T[K]>}`
+          [K in keyof T & (number | string)]: K extends string
+            ? `${K}.${Path<T[K]>}` | `${K}`
             : never
-        }[keyof T & (string | number)]
+        }[keyof T & (number | string)]
       : never
 
 export type ExtractTypeFromPath<

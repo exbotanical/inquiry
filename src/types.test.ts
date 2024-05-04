@@ -1,6 +1,8 @@
-import { expectTypeOf } from 'expect-type'
-import type { Path, ExtractTypeFromPath, UnIndexed, Predicate } from './types'
 import { describe, test } from 'node:test'
+
+import { expectTypeOf } from 'expect-type'
+
+import type { Path, ExtractTypeFromPath, UnIndexed, Predicate } from './types'
 
 interface Obj {
   a: string
@@ -51,7 +53,7 @@ describe('type tests', () => {
 
   test('UnIndexed', () => {
     expectTypeOf<UnIndexed<Obj>>().toMatchTypeOf<Obj>()
-    expectTypeOf<UnIndexed<Array<Obj>>>().toMatchTypeOf<Obj>()
+    expectTypeOf<UnIndexed<Obj[]>>().toMatchTypeOf<Obj>()
   })
 
   test('Predicate', () => {

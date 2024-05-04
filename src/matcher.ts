@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'util'
+
 import { Path, Predicate, UnIndexed } from './types'
 import { getField } from './utils'
 
@@ -67,12 +68,13 @@ export class Matcher {
       fieldPath: Path<UnIndexed<T>>,
     ) => {
       const f = getField(el, fieldPath)
+
       if (typeof f === 'string') {
         return f.includes(that)
       }
 
       if (Array.isArray(f)) {
-        return (f as Array<T>).some(ff => isDeepStrictEqual(ff, that))
+        return (f as T[]).some(ff => isDeepStrictEqual(ff, that))
       }
 
       return false

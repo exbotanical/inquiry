@@ -1,4 +1,5 @@
 import { Matcher } from './matcher'
+
 import type {
   Conjunction,
   ExtractTypeFromPath,
@@ -43,26 +44,22 @@ interface NotClause<T> {
 }
 
 type BaseOpts<T> =
-  | EqClause<T>
-  | ContainsClause<T>
-  | GtClause<T>
-  | GteClause<T>
-  | LtClause<T>
-  | LteClause<T>
+  ContainsClause<T> | EqClause<T> | GtClause<T> | GteClause<T> | LtClause<T> | LteClause<T>
 
 type Opts<T> = BaseOpts<T> | NotClause<T>
 
-export class Query<T extends Record<any, any> | Array<Record<any, any>>> {
+export class Query<T extends Record<any, any> | Record<any, any>[]> {
   readonly #isArrayData // TODO: test non-array or remove
+
   readonly #initialData
-  readonly #conjunctionStack: Array<Conjunction> = []
-  readonly #queries: Array<QueryStatement<T>> = []
+
+  readonly #conjunctionStack: Conjunction[] = []
+
+  readonly #queries: QueryStatement<T>[] = []
 
   constructor(private readonly data: T) {
     this.#isArrayData = Array.isArray(this.data)
-    this.#initialData = (this.#isArrayData ? this.data : [this.data]) as Array<
-      UnIndexed<T>
-    > // Technically, it's just a T but we need the distilled type for `runQuery`.
+    this.#initialData = (this.#isArrayData ? this.data : [this.data]) as UnIndexed<T>[] // Technically, it's just a T but we need the distilled type for `runQuery`.
   }
 
   #getPredicate<S extends string>(
@@ -106,7 +103,7 @@ export class Query<T extends Record<any, any> | Array<Record<any, any>>> {
     }
   }
 
-  #run(): Array<UnIndexed<T>> {
+  #run(): UnIndexed<T>[] {
     return this.#queries.reduce(
       (acc, query) => [...acc.filter(el => runQuery(query, el))],
       this.#initialData,

@@ -8,7 +8,7 @@ interface Animal {
   name: string
 }
 
-const animals: Array<Animal> = [
+const animals: Animal[] = [
   { type: 'elephant', name: 'bobo' },
   { type: 'elephant', name: 'bobo2' },
   { type: 'snake', name: 'snebby' },
@@ -66,7 +66,7 @@ const complex3 = {
   },
 }
 
-const complex: Array<ComplexField> = [complex1, complex2, complex3]
+const complex: ComplexField[] = [complex1, complex2, complex3]
 
 interface LargeConfig {
   id: string
@@ -76,12 +76,12 @@ interface LargeConfig {
     teamName: string
     email: string
   }
-  configs: Array<{ id: string; type: string }>
-  numbers: Array<number>
+  configs: { id: string; type: string }[]
+  numbers: number[]
   unit: number
 }
 
-const configs: Array<LargeConfig> = [
+const configs: LargeConfig[] = [
   {
     id: '123',
     name: 'config1',

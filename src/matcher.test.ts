@@ -1,6 +1,7 @@
-import { describe, it } from 'node:test'
-import { Matcher } from './matcher'
 import assert from 'node:assert'
+import { describe, it } from 'node:test'
+
+import { Matcher } from './matcher'
 
 describe('matcher functions', () => {
   describe('eq', () => {

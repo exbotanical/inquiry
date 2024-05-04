@@ -52,6 +52,9 @@
     "url": "https://github.com/exbotanical/inquire/issues"
   },
   "homepage": "https://github.com/exbotanical/inquire#readme",
+  "dependencies": {
+    "lodash.isequal": "^4.5.0"
+  },
   "devDependencies": {
     "@babel/cli": "7.23.0",
     "@babel/core": "7.23.2",
@@ -90,8 +93,5 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  },
-  "dependencies": {
-    "lodash.isequal": "^4.5.0"
   }
 }
