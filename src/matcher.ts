@@ -60,8 +60,6 @@ export class Matcher {
     }
   }
 
-  // TODO: type-check - fieldPath must correlate to an array type
-  // TODO: type-check - `to` must match the same type as el[fieldPath]
   static contains<T>(that: T) {
     return <T extends Record<PropertyKey, any>>(
       el: UnIndexed<T>,
@@ -78,6 +76,18 @@ export class Matcher {
       }
 
       return false
+    }
+  }
+
+  static match<T extends Record<PropertyKey, any>>(
+    fn: (
+      viewData: UnIndexed<T> | UnIndexed<T>[keyof UnIndexed<T>] | undefined,
+    ) => boolean,
+  ) {
+    return (el: UnIndexed<T>, fieldPath: Path<UnIndexed<T>>) => {
+      const f = getField(el, fieldPath)
+
+      return fn(f)
     }
   }
 }

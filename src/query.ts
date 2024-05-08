@@ -43,8 +43,18 @@ interface NotClause<T> {
   not: BaseOpts<T>
 }
 
+interface MatchClause<T> {
+  match: (fn: T) => boolean
+}
+
 type BaseOpts<T> =
-  ContainsClause<T> | EqClause<T> | GtClause<T> | GteClause<T> | LtClause<T> | LteClause<T>
+  | ContainsClause<T>
+  | EqClause<T>
+  | GtClause<T>
+  | GteClause<T>
+  | LtClause<T>
+  | LteClause<T>
+  | MatchClause<T>
 
 type Opts<T> = BaseOpts<T> | NotClause<T>
 
@@ -59,7 +69,9 @@ export class Query<T extends Record<any, any> | Record<any, any>[]> {
 
   constructor(private readonly data: T) {
     this.#isArrayData = Array.isArray(this.data)
-    this.#initialData = (this.#isArrayData ? this.data : [this.data]) as UnIndexed<T>[] // Technically, it's just a T but we need the distilled type for `runQuery`.
+    this.#initialData = (
+      this.#isArrayData ? this.data : [this.data]
+    ) as UnIndexed<T>[] // Technically, it's just a T but we need the distilled type for `runQuery`.
   }
 
   #getPredicate<S extends string>(
@@ -82,6 +94,9 @@ export class Query<T extends Record<any, any> | Record<any, any>[]> {
     }
     if ('lte' in opts) {
       return Matcher.gte(opts.lte)
+    }
+    if ('match' in opts) {
+      return Matcher.match(opts.match)
     }
 
     throw Error('nomatch')

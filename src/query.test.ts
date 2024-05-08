@@ -250,4 +250,19 @@ describe('fluent query api', () => {
     assert.deepEqual(result[0], configs[0])
     assert.deepEqual(result[1], configs[2])
   })
+
+  it('runs a query using the match escape hatch', () => {
+    const result = new View(configs)
+      .get()
+      .where('timestamp', { lt: Date.now() })
+      .and()
+      .where('configs', {
+        match: configs => configs.some(config => config.id === 'node'),
+      })
+      .run()
+
+    assert.strictEqual(result.length, 2)
+    assert.deepEqual(result[0], configs[0])
+    assert.deepEqual(result[1], configs[2])
+  })
 })
