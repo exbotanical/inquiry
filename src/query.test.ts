@@ -142,7 +142,7 @@ const configs: LargeConfig[] = [
     timestamp: Date.now(),
     owner: {
       email: 'c@c.com',
-      teamName: 'c team',
+      teamName: 'b team',
     },
     configs: [
       {
@@ -251,6 +251,7 @@ describe('fluent query api', () => {
     assert.deepEqual(result[1], configs[2])
   })
 
+  // TODO: has usage w/array and array vs object compat
   it('runs a query using the match escape hatch', () => {
     const result = new View(configs)
       .get()
@@ -264,5 +265,33 @@ describe('fluent query api', () => {
     assert.strictEqual(result.length, 2)
     assert.deepEqual(result[0], configs[0])
     assert.deepEqual(result[1], configs[2])
+  })
+
+  it('runs a query against scalar values using the match escape hatch', () => {
+    const result = new View(configs)
+      .get()
+      .where('numbers', {
+        match: numbers => numbers.includes(1) || numbers.includes(36),
+      })
+      .run()
+
+    assert.strictEqual(result.length, 2)
+    assert.deepEqual(result[0], configs[1])
+    assert.deepEqual(result[1], configs[2])
+  })
+
+  it('runs a query against scalar values using the match escape hatch', () => {
+    const thing = {
+      z: {
+        ghhhs: 'o',
+        a: 1,
+      },
+      qq: [
+        {
+          r: 1,
+          p: 'p',
+        },
+      ],
+    }
   })
 })

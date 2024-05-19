@@ -1,7 +1,8 @@
-import assert from 'node:assert'
+import assert, { deepEqual, deepStrictEqual } from 'node:assert'
 import { describe, it } from 'node:test'
 
 import { Matcher } from './matcher'
+import { isDeepStrictEqual } from 'node:util'
 
 describe('matcher functions', () => {
   describe('eq', () => {
@@ -331,6 +332,43 @@ describe('matcher functions', () => {
         },
         'q.p',
       )
+
+      assert.strictEqual(ret, true)
+    })
+  })
+
+  describe('match', () => {
+    it('matches using the match escape hatch function', () => {
+      const fn = Matcher.match(({ b }) => b === 1)
+      const ret = fn({ a: { b: 1, c: 1, d: 1 } }, 'a')
+
+      assert.strictEqual(ret, true)
+    })
+
+    it('matches a complex object using match', () => {
+      const d = {
+        p: [1, 2, 3],
+        n: 1,
+        w: ['a', 'hello', 'goodbye'],
+        r: { t: [12, 1] },
+        q: {
+          p: [
+            { x: 5, y: 6 },
+            { p: ['n'], q: 'query' },
+            { a: 1, b: 2, c: { d: 3 } },
+            { dubliners: 'ulysses', yyy: 'zzz' },
+          ],
+        },
+      }
+
+      const fn = Matcher.match(dx =>
+        // TODO: fix type
+        dx.some((dd: (typeof d.q.p)[number]) =>
+          isDeepStrictEqual(dd, { a: 1, b: 2, c: { d: 3 } }),
+        ),
+      )
+
+      const ret = fn(d, 'q.p')
 
       assert.strictEqual(ret, true)
     })
