@@ -1,23 +1,23 @@
 import { isDeepStrictEqual } from 'util'
 
-import { Path, Predicate, UnIndexed } from './types'
+import { Path, PlainObject, Predicate, UnIndexed } from './types'
 import { getField } from './utils'
 
 export class Matcher {
-  static not<T extends Record<PropertyKey, any>>(match: Predicate<T>) {
+  static not<T extends PlainObject>(match: Predicate<T>) {
     return (el: UnIndexed<T>, fieldPath: Path<UnIndexed<T>>) =>
       !match(el, fieldPath)
   }
 
   static eq(to: number | string) {
-    return <T extends Record<PropertyKey, any>>(
+    return <T extends PlainObject>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => getField(el, fieldPath) === to
   }
 
   static gt(to: number | string) {
-    return <T extends Record<PropertyKey, any>>(
+    return <T extends PlainObject>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => {
@@ -28,7 +28,7 @@ export class Matcher {
   }
 
   static gte(to: number | string) {
-    return <T extends Record<PropertyKey, any>>(
+    return <T extends PlainObject>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => {
@@ -39,7 +39,7 @@ export class Matcher {
   }
 
   static lt(to: number | string) {
-    return <T extends Record<PropertyKey, any>>(
+    return <T extends PlainObject>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => {
@@ -50,7 +50,7 @@ export class Matcher {
   }
 
   static lte(to: number | string) {
-    return <T extends Record<PropertyKey, any>>(
+    return <T extends PlainObject>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => {
@@ -61,7 +61,7 @@ export class Matcher {
   }
 
   static contains<T>(that: T) {
-    return <T extends Record<PropertyKey, any>>(
+    return <T extends PlainObject>(
       el: UnIndexed<T>,
       fieldPath: Path<UnIndexed<T>>,
     ) => {
@@ -79,7 +79,7 @@ export class Matcher {
     }
   }
 
-  static match<T extends Record<PropertyKey, any>>(
+  static match<T extends PlainObject>(
     fn: (
       viewData: UnIndexed<T> | UnIndexed<T>[keyof UnIndexed<T>] | undefined,
     ) => boolean,

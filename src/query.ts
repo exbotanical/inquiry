@@ -58,20 +58,13 @@ type BaseOpts<T> =
 
 type Opts<T> = BaseOpts<T> | NotClause<T>
 
-export class Query<T extends Record<any, any> | Record<any, any>[]> {
-  readonly #isArrayData // TODO: test non-array or remove
-
-  readonly #initialData
-
+export class Query<T extends Record<any, any>[]> {
+  readonly #initialData: UnIndexed<T>[]
   readonly #conjunctionStack: Conjunction[] = []
-
   readonly #queries: QueryStatement<T>[] = []
 
   constructor(private readonly data: T) {
-    this.#isArrayData = Array.isArray(this.data)
-    this.#initialData = (
-      this.#isArrayData ? this.data : [this.data]
-    ) as UnIndexed<T>[] // Technically, it's just a T but we need the distilled type for `runQuery`.
+    this.#initialData = this.data as unknown as UnIndexed<T>[]
   }
 
   #getPredicate<S extends string>(

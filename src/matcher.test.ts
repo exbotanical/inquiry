@@ -1,4 +1,4 @@
-import assert, { deepEqual, deepStrictEqual } from 'node:assert'
+import assert from 'node:assert'
 import { describe, it } from 'node:test'
 
 import { Matcher } from './matcher'

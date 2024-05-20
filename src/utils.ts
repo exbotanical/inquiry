@@ -1,6 +1,6 @@
-import { Path } from './types'
+import type { Path, PlainObject } from './types'
 
-export function getField<T extends Record<string, any>>(
+export function getField<T extends PlainObject>(
   obj: T,
   fieldPath: Path<T>,
 ): T | T[keyof T] | undefined {
