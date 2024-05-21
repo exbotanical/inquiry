@@ -1,4 +1,5 @@
 import { Query } from './query'
+
 import type { PlainObject } from './types'
 
 export class View<T extends PlainObject[]> {

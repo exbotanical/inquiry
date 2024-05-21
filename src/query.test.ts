@@ -251,7 +251,6 @@ describe('fluent query api', () => {
     assert.deepEqual(result[1], configs[2])
   })
 
-  // TODO: has usage w/array and array vs object compat
   it('runs a query using the filter escape hatch', () => {
     const result = new View(configs)
       .get()

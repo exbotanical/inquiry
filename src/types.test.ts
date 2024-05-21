@@ -5,10 +5,9 @@ import { describe, test } from 'node:test'
 
 import { expectTypeOf } from 'expect-type'
 
-import type { Path, ExtractTypeFromPath, UnIndexed, Predicate } from './types'
 import { Matcher } from './matcher'
-import { configs } from './query.test'
-import { Query } from './query'
+
+import type { Path, ExtractTypeFromPath, UnIndexed, Predicate } from './types'
 
 interface Obj {
   a: string
@@ -100,7 +99,7 @@ describe('type tests', () => {
 
     expectTypeOf(Matcher.filter).toBeCallableWith(_ => true)
     expectTypeOf(Matcher.filter<{ a: { a: number } }, 'a'>).toBeCallableWith(
-      ({ a }) => true,
+      ({ a }) => !!a,
     )
     expectTypeOf(
       Matcher.filter<{ a: { b: string; c: { d: number } } }, 'a.c.d'>,
@@ -132,17 +131,17 @@ describe('type tests', () => {
     expectTypeOf(Matcher.contains(undefined)).toBeCallableWith({ a: 1 }, 'a')
     expectTypeOf(Matcher.contains(NaN)).toBeCallableWith({ a: 1 }, 'a')
 
-    // expectTypeOf(Matcher.filter(_ => true)).toBeCallableWith({ a: 1 }, 'a')
-    // expectTypeOf(
-    //   Matcher.filter<{ a: { a: number } }, 'a'>(({ a }) => true),
-    // ).toBeCallableWith({ a: { a: 1 } }, 'a')
-    // expectTypeOf(
-    //   Matcher.filter<{ a: { b: string; c: { d: number } } }, 'a.c.d'>(
-    //     (_: number) => true,
-    //   ),
-    // ).toBeCallableWith({ a: { b: 'a', c: { d: 1 } } }, 'a.c.d')
-    // expectTypeOf(
-    //   Matcher.filter<{ a: number[] }, 'a'>((_: number[]) => true),
-    // ).toBeCallableWith({ a: [1] }, 'a')
+    expectTypeOf(Matcher.filter(_ => true)).toBeCallableWith({ a: 1 }, 'a')
+    expectTypeOf(
+      Matcher.filter<{ a: { a: number } }, 'a'>(({ a }) => !!a),
+    ).toBeCallableWith({ a: { a: 1 } }, 'a')
+    expectTypeOf(
+      Matcher.filter<{ a: { b: string; c: { d: number } } }, 'a.c.d'>(
+        (_: number) => true,
+      ),
+    ).toBeCallableWith({ a: { b: 'a', c: { d: 1 } } }, 'a.c.d')
+    expectTypeOf(
+      Matcher.filter<{ a: number[] }, 'a'>((_: number[]) => true),
+    ).toBeCallableWith({ a: [1] }, 'a')
   })
 })

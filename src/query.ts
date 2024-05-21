@@ -4,12 +4,13 @@ import type {
   Conjunction,
   ExtractTypeFromPath,
   Path,
+  PlainObject,
   Predicate,
   UnIndexed,
 } from './types'
 
 interface QueryStatement<T> {
-  field: Path<UnIndexed<T>>
+  field: Path<T>
   cond: Predicate<T>
   and?: QueryStatement<T>
   or?: QueryStatement<T>
@@ -50,77 +51,32 @@ interface FilterClause<T> {
 type BaseOpts<T> =
   | ContainsClause<T>
   | EqClause<T>
+  | FilterClause<T>
   | GtClause<T>
   | GteClause<T>
   | LtClause<T>
   | LteClause<T>
-  | FilterClause<T>
 
 type Opts<T> = BaseOpts<T> | NotClause<T>
 
-export class Query<T extends Record<any, any>[]> {
+interface WhereSubset<T extends PlainObject[]> {
+  where: Query<T>['where']
+}
+
+export class Query<T extends PlainObject[]> {
   readonly #initialData: UnIndexed<T>[]
+
   readonly #conjunctionStack: Conjunction[] = []
-  readonly #queries: QueryStatement<T>[] = []
+
+  readonly #queries: QueryStatement<UnIndexed<T>>[] = []
 
   constructor(private readonly data: T) {
     this.#initialData = this.data as unknown as UnIndexed<T>[]
   }
 
-  #getPredicate<S extends string>(
-    opts: Opts<ExtractTypeFromPath<UnIndexed<typeof this.data>, S>>,
-  ): Predicate<T> {
-    if ('eq' in opts) {
-      return Matcher.eq(opts.eq)
-    }
-    if ('contains' in opts) {
-      return Matcher.contains(opts.contains)
-    }
-    if ('gt' in opts) {
-      return Matcher.gt(opts.gt)
-    }
-    if ('gte' in opts) {
-      return Matcher.gte(opts.gte)
-    }
-    if ('lt' in opts) {
-      return Matcher.lt(opts.lt)
-    }
-    if ('lte' in opts) {
-      return Matcher.gte(opts.lte)
-    }
-    if ('filter' in opts) {
-      return Matcher.filter(opts.filter)
-    }
-
-    throw Error('nomatch')
-  }
-
-  #and(): { where: Query<T>['where'] } {
-    this.#conjunctionStack.push('and')
-
-    return {
-      where: this.where.bind(this),
-    }
-  }
-
-  #or(): { where: Query<T>['where'] } {
-    this.#conjunctionStack.push('or')
-
-    return {
-      where: this.where.bind(this),
-    }
-  }
-
-  #run(): UnIndexed<T>[] {
-    return this.#queries.reduce(
-      (acc, query) => [...acc.filter(el => runQuery(query, el))],
-      this.#initialData,
-    )
-  }
-
-  where<T extends Path<UnIndexed<typeof this.data>>>(
-    field: T,
-    opts: Opts<ExtractTypeFromPath<UnIndexed<typeof this.data>, T>>,
+  where<P extends Path<UnIndexed<T>>>(
+    field: P,
+    opts: Opts<ExtractTypeFromPath<UnIndexed<T>, P>>,
   ) {
     const conjunction = this.#conjunctionStack.pop()
 
@@ -151,9 +107,61 @@ export class Query<T extends Record<any, any>[]> {
       run: this.#run.bind(this),
     }
   }
+
+  #getPredicate<S extends string>(
+    opts: Opts<ExtractTypeFromPath<UnIndexed<T>, S>>,
+  ): Predicate<UnIndexed<T>> {
+    if ('eq' in opts) {
+      return Matcher.eq(opts.eq)
+    }
+    if ('contains' in opts) {
+      return Matcher.contains(opts.contains)
+    }
+    if ('gt' in opts) {
+      return Matcher.gt(opts.gt)
+    }
+    if ('gte' in opts) {
+      return Matcher.gte(opts.gte)
+    }
+    if ('lt' in opts) {
+      return Matcher.lt(opts.lt)
+    }
+    if ('lte' in opts) {
+      return Matcher.gte(opts.lte)
+    }
+    if ('filter' in opts) {
+      // https://github.com/microsoft/TypeScript/issues/33133
+      return Matcher.filter<any, any>(opts.filter)
+    }
+
+    throw Error('nomatch')
+  }
+
+  #and(): WhereSubset<T> {
+    this.#conjunctionStack.push('and')
+
+    return {
+      where: this.where.bind(this),
+    }
+  }
+
+  #or(): WhereSubset<T> {
+    this.#conjunctionStack.push('or')
+
+    return {
+      where: this.where.bind(this),
+    }
+  }
+
+  #run(): UnIndexed<T>[] {
+    return this.#queries.reduce(
+      (acc, query) => acc.filter(el => runQuery(query, el)),
+      this.#initialData,
+    )
+  }
 }
 
-function runQuery<T>(query: QueryStatement<T>, el: UnIndexed<T>): boolean {
+function runQuery<T>(query: QueryStatement<T>, el: T): boolean {
   if (query.and) {
     return query.cond(el, query.field) && runQuery(query.and, el)
   }

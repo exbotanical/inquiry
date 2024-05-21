@@ -1,9 +1,9 @@
-import type { Path, PlainObject } from './types'
+import type { ExtractTypeFromPath, Path, PlainObject } from './types'
 
 export function getField<T extends PlainObject>(
   obj: T,
   fieldPath: Path<T>,
-): T | T[keyof T] | undefined {
+): ExtractTypeFromPath<T, Path<T>> | undefined {
   const parts = fieldPath.split('.')
 
   let result = obj
@@ -15,5 +15,5 @@ export function getField<T extends PlainObject>(
     result = result[part]
   }
 
-  return result
+  return result as ExtractTypeFromPath<T, Path<T>>
 }
