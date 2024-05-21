@@ -339,8 +339,9 @@ describe('matcher functions', () => {
 
   describe('filter', () => {
     it('matches using the filter escape hatch function', () => {
-      const fn = Matcher.filter(({ b }) => b === 1)
-      const ret = fn({ a: { b: 1, c: 1, d: 1 } }, 'a')
+      const d = { a: { b: 1, c: 1, d: 1 } }
+      const fn = Matcher.filter<typeof d, 'a'>(({ b }) => b === 1)
+      const ret = fn(d, 'a')
 
       assert.strictEqual(ret, true)
     })
@@ -361,11 +362,8 @@ describe('matcher functions', () => {
         },
       }
 
-      const fn = Matcher.filter(dx =>
-        // TODO: fix type
-        dx.some((dd: (typeof d.q.p)[number]) =>
-          isDeepStrictEqual(dd, { a: 1, b: 2, c: { d: 3 } }),
-        ),
+      const fn = Matcher.filter<typeof d, 'q.p'>(dx =>
+        dx.some(dd => isDeepStrictEqual(dd, { a: 1, b: 2, c: { d: 3 } })),
       )
 
       const ret = fn(d, 'q.p')

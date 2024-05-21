@@ -1,26 +1,20 @@
 import { isDeepStrictEqual } from 'util'
 
-import { Path, PlainObject, Predicate, UnIndexed } from './types'
+import { ExtractTypeFromPath, Path, PlainObject, Predicate } from './types'
 import { getField } from './utils'
 
 export class Matcher {
   static not<T extends PlainObject>(match: Predicate<T>) {
-    return (el: UnIndexed<T>, fieldPath: Path<UnIndexed<T>>) =>
-      !match(el, fieldPath)
+    return (el: T, fieldPath: Path<T>) => !match(el, fieldPath)
   }
 
   static eq(to: number | string) {
-    return <T extends PlainObject>(
-      el: UnIndexed<T>,
-      fieldPath: Path<UnIndexed<T>>,
-    ) => getField(el, fieldPath) === to
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) =>
+      getField(el, fieldPath) === to
   }
 
   static gt(to: number | string) {
-    return <T extends PlainObject>(
-      el: UnIndexed<T>,
-      fieldPath: Path<UnIndexed<T>>,
-    ) => {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
       const f = getField(el, fieldPath)
 
       return f ? f > to : false
@@ -28,10 +22,7 @@ export class Matcher {
   }
 
   static gte(to: number | string) {
-    return <T extends PlainObject>(
-      el: UnIndexed<T>,
-      fieldPath: Path<UnIndexed<T>>,
-    ) => {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
       const f = getField(el, fieldPath)
 
       return f ? f >= to : false
@@ -39,10 +30,7 @@ export class Matcher {
   }
 
   static lt(to: number | string) {
-    return <T extends PlainObject>(
-      el: UnIndexed<T>,
-      fieldPath: Path<UnIndexed<T>>,
-    ) => {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
       const f = getField(el, fieldPath)
 
       return f ? f < to : false
@@ -50,10 +38,7 @@ export class Matcher {
   }
 
   static lte(to: number | string) {
-    return <T extends PlainObject>(
-      el: UnIndexed<T>,
-      fieldPath: Path<UnIndexed<T>>,
-    ) => {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
       const f = getField(el, fieldPath)
 
       return f ? f <= to : false
@@ -61,10 +46,7 @@ export class Matcher {
   }
 
   static contains<T>(that: T) {
-    return <T extends PlainObject>(
-      el: UnIndexed<T>,
-      fieldPath: Path<UnIndexed<T>>,
-    ) => {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
       const f = getField(el, fieldPath)
 
       if (typeof f === 'string') {
@@ -79,13 +61,11 @@ export class Matcher {
     }
   }
 
-  static filter<T extends PlainObject>(
-    fn: (
-      viewData: UnIndexed<T> | UnIndexed<T>[keyof UnIndexed<T>] | undefined,
-    ) => boolean,
+  static filter<T extends PlainObject, P extends Path<T>>(
+    fn: (viewData: ExtractTypeFromPath<T, P>) => boolean,
   ) {
-    return (el: UnIndexed<T>, fieldPath: Path<UnIndexed<T>>) => {
-      const f = getField(el, fieldPath)
+    return (el: T, fieldPath: P) => {
+      const f = getField(el, fieldPath) as ExtractTypeFromPath<T, P>
 
       return fn(f)
     }

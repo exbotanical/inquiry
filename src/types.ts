@@ -1,10 +1,7 @@
 export type PlainObject = Record<PropertyKey, any>
 export type Conjunction = 'and' | 'or'
 export type UnIndexed<T> = T extends any[] ? T[number] : T
-export type Predicate<T> = (
-  el: UnIndexed<T>,
-  field: Path<UnIndexed<T>>,
-) => boolean
+export type Predicate<T> = (el: T, field: Path<T>) => boolean
 
 export type Path<T> = T extends any[]
   ? never
