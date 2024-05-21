@@ -337,15 +337,15 @@ describe('matcher functions', () => {
     })
   })
 
-  describe('match', () => {
-    it('matches using the match escape hatch function', () => {
-      const fn = Matcher.match(({ b }) => b === 1)
+  describe('filter', () => {
+    it('matches using the filter escape hatch function', () => {
+      const fn = Matcher.filter(({ b }) => b === 1)
       const ret = fn({ a: { b: 1, c: 1, d: 1 } }, 'a')
 
       assert.strictEqual(ret, true)
     })
 
-    it('matches a complex object using match', () => {
+    it('matches a complex object using filter', () => {
       const d = {
         p: [1, 2, 3],
         n: 1,
@@ -361,7 +361,7 @@ describe('matcher functions', () => {
         },
       }
 
-      const fn = Matcher.match(dx =>
+      const fn = Matcher.filter(dx =>
         // TODO: fix type
         dx.some((dd: (typeof d.q.p)[number]) =>
           isDeepStrictEqual(dd, { a: 1, b: 2, c: { d: 3 } }),

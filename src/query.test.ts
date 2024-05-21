@@ -252,13 +252,13 @@ describe('fluent query api', () => {
   })
 
   // TODO: has usage w/array and array vs object compat
-  it('runs a query using the match escape hatch', () => {
+  it('runs a query using the filter escape hatch', () => {
     const result = new View(configs)
       .get()
       .where('timestamp', { lt: Date.now() })
       .and()
       .where('configs', {
-        match: configs => configs.some(config => config.id === 'node'),
+        filter: configs => configs.some(config => config.id === 'node'),
       })
       .run()
 
@@ -267,31 +267,16 @@ describe('fluent query api', () => {
     assert.deepEqual(result[1], configs[2])
   })
 
-  it('runs a query against scalar values using the match escape hatch', () => {
+  it('runs a query against scalar values using the filter escape hatch', () => {
     const result = new View(configs)
       .get()
       .where('numbers', {
-        match: numbers => numbers.includes(1) || numbers.includes(36),
+        filter: numbers => numbers.includes(1) || numbers.includes(36),
       })
       .run()
 
     assert.strictEqual(result.length, 2)
     assert.deepEqual(result[0], configs[1])
     assert.deepEqual(result[1], configs[2])
-  })
-
-  it('runs a query against scalar values using the match escape hatch', () => {
-    const thing = {
-      z: {
-        ghhhs: 'o',
-        a: 1,
-      },
-      qq: [
-        {
-          r: 1,
-          p: 'p',
-        },
-      ],
-    }
   })
 })

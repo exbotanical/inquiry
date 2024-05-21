@@ -43,8 +43,8 @@ interface NotClause<T> {
   not: BaseOpts<T>
 }
 
-interface MatchClause<T> {
-  match: (fn: T) => boolean
+interface FilterClause<T> {
+  filter: (fn: T) => boolean
 }
 
 type BaseOpts<T> =
@@ -54,7 +54,7 @@ type BaseOpts<T> =
   | GteClause<T>
   | LtClause<T>
   | LteClause<T>
-  | MatchClause<T>
+  | FilterClause<T>
 
 type Opts<T> = BaseOpts<T> | NotClause<T>
 
@@ -88,8 +88,8 @@ export class Query<T extends Record<any, any>[]> {
     if ('lte' in opts) {
       return Matcher.gte(opts.lte)
     }
-    if ('match' in opts) {
-      return Matcher.match(opts.match)
+    if ('filter' in opts) {
+      return Matcher.filter(opts.filter)
     }
 
     throw Error('nomatch')

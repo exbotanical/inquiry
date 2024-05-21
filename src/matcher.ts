@@ -79,7 +79,7 @@ export class Matcher {
     }
   }
 
-  static match<T extends PlainObject>(
+  static filter<T extends PlainObject>(
     fn: (
       viewData: UnIndexed<T> | UnIndexed<T>[keyof UnIndexed<T>] | undefined,
     ) => boolean,
