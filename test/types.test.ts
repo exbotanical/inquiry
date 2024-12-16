@@ -5,9 +5,14 @@ import { describe, test } from 'node:test'
 
 import { expectTypeOf } from 'expect-type'
 
-import { Matcher } from './matcher'
+import { Matcher } from '../src/matcher'
 
-import type { Path, ExtractTypeFromPath, UnIndexed, Predicate } from './types'
+import type {
+  Path,
+  ExtractTypeFromPath,
+  UnIndexed,
+  Predicate,
+} from '../src/types'
 
 interface Obj {
   a: string

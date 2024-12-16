@@ -32,14 +32,14 @@
     "prerelease": "npm run pack && tar -xvzf *.tgz && rimraf package *.tgz",
     "semantic-release": "semantic-release",
     "test": "npm run test:unit && npm run test:type",
-    "test:unit": "glob -c \"node --loader tsx --no-warnings --test\" \"./src/**/*.test.ts\"",
-    "test:unit:dev": "glob -c \"node --loader tsx --no-warnings --test --watch\" \"./src/**/*.test.ts\"",
-    "test:type": "tsc --noEmit src/types.test.ts",
-    "test:type:dev": "tsc -w --noEmit src/types.test.ts",
+    "test:unit": "glob -c \"node --import tsx --no-warnings --test\" \"./test/**/*.test.ts\"",
+    "test:unit:dev": "glob -c \"node --import tsx --no-warnings --test --watch\" \"./test/**/*.test.ts\"",
+    "test:type": "tsc --noEmit test/types.test.ts",
+    "test:type:dev": "tsc -w --noEmit test/types.test.ts",
     "typecheck": "tsc -p ./tsconfig.json --noEmit"
   },
   "lint-staged": {
-    "src/**/*.ts": [
+    "{src,test}/**/*.ts": [
       "npm run lint",
       "npm run test",
       "git add ."

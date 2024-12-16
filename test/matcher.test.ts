@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import { describe, it } from 'node:test'
 import { isDeepStrictEqual } from 'node:util'
 
-import { Matcher } from './matcher'
+import { Matcher } from '../src/matcher'
 
 describe('matcher functions', () => {
   describe('eq', () => {

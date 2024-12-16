@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
 
-import { View } from '.'
+import { View } from '../src'
 
 interface Animal {
   type: string
