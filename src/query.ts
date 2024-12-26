@@ -44,6 +44,25 @@ interface NotClause<T> {
   not: BaseOpts<T>
 }
 
+interface EmailClause<T = boolean> {
+  email: T
+}
+
+interface EmptyClause<T = boolean> {
+  empty: T
+}
+
+type LengthClause<T = string> = {
+  len: AtLeastOne<{
+    min: T
+    max: T
+  }>
+}
+
+type AtLeastOne<T, K extends keyof T = keyof T> = K extends keyof T
+  ? Pick<T, K> & Partial<Omit<T, K>>
+  : never
+
 interface FilterClause<T> {
   filter: (fn: T) => boolean
 }
@@ -56,6 +75,9 @@ type BaseOpts<T> =
   | GteClause<T>
   | LtClause<T>
   | LteClause<T>
+  // | EmailClause<T extends string ? boolean : never>
+  | EmptyClause<T extends string ? boolean : never>
+  | LengthClause<T extends string ? number : never>
 
 type Opts<T> = BaseOpts<T> | NotClause<T>
 
@@ -63,11 +85,13 @@ interface WhereSubset<T extends PlainObject[]> {
   where: Query<T>['where']
 }
 
+const MATCHER_KEYS = Object.entries(Object.getOwnPropertyDescriptors(Matcher))
+  .filter(([_, value]) => typeof value.value === 'function' && value.writable)
+  .map(([key]) => key)
+
 export class Query<T extends PlainObject[]> {
   readonly #initialData: UnIndexed<T>[]
-
   readonly #conjunctionStack: Conjunction[] = []
-
   readonly #queries: QueryStatement<UnIndexed<T>>[] = []
 
   constructor(private readonly data: T) {
@@ -111,27 +135,14 @@ export class Query<T extends PlainObject[]> {
   #getPredicate<S extends string>(
     opts: Opts<ExtractTypeFromPath<UnIndexed<T>, S>>,
   ): Predicate<UnIndexed<T>> {
-    if ('eq' in opts) {
-      return Matcher.eq(opts.eq)
-    }
-    if ('contains' in opts) {
-      return Matcher.contains(opts.contains)
-    }
-    if ('gt' in opts) {
-      return Matcher.gt(opts.gt)
-    }
-    if ('gte' in opts) {
-      return Matcher.gte(opts.gte)
-    }
-    if ('lt' in opts) {
-      return Matcher.lt(opts.lt)
-    }
-    if ('lte' in opts) {
-      return Matcher.gte(opts.lte)
-    }
-    if ('filter' in opts) {
-      // https://github.com/microsoft/TypeScript/issues/33133
-      return Matcher.filter<any, any>(opts.filter)
+    // TODO: regex match
+    for (const option of MATCHER_KEYS) {
+      if (option in opts) {
+        const arg =
+          opts[option as keyof Opts<ExtractTypeFromPath<UnIndexed<T>, S>>]
+        const fn = Matcher[option as keyof typeof Matcher] as Function
+        return fn(arg)
+      }
     }
 
     throw Error('nomatch')
@@ -165,7 +176,6 @@ function runQuery<T>(query: QueryStatement<T>, el: T): boolean {
   if (query.and) {
     return query.cond(el, query.field) && runQuery(query.and, el)
   }
-
   if (query.or) {
     return query.cond(el, query.field) || runQuery(query.or, el)
   }

@@ -25,6 +25,7 @@ interface ComplexField {
   name: string
   age: number
   hometown: Hometown
+  x?: string
 }
 
 const complex1 = {
@@ -33,6 +34,7 @@ const complex1 = {
     city: 'Houston',
     country: 'USA',
   },
+
   name: 'Scoop Bailey',
   pet: {
     name: 'Hootie',
@@ -64,6 +66,7 @@ const complex3 = {
     name: 'greedle',
     type: 'beetle',
   },
+  x: '',
 }
 
 const complex: ComplexField[] = [complex1, complex2, complex3]
@@ -251,6 +254,39 @@ describe('fluent query api', () => {
     assert.deepEqual(result[1], configs[2])
   })
 
+  it('conjunctions are left-associative', () => {
+    const view = new View([
+      { x: 1, y: 2 },
+      { x: 10, y: 2 },
+      { x: 122, y: 2 },
+      { x: 13, y: 22 },
+    ])
+
+    const r1 = view
+      .get()
+      .where('x', { gt: 10 })
+      .and()
+      .where('y', { gt: 10 })
+      .or()
+      .where('x', { eq: 1 })
+      .run()
+
+    const r2 = view
+      .get()
+      .where('x', { gt: 10 })
+      .or()
+      .where('x', { eq: 1 })
+      .and()
+      .where('y', { gt: 10 })
+      .run()
+
+    assert.equal(r1.length, 2)
+    assert.equal(r1[0].x, 1)
+    assert.equal(r1[1].x, 13)
+    assert.equal(r2.length, 1)
+    assert.equal(r2[0].x, 13)
+  })
+
   it('runs a query using the filter escape hatch', () => {
     const result = new View(configs)
       .get()
@@ -277,5 +313,94 @@ describe('fluent query api', () => {
     assert.strictEqual(result.length, 2)
     assert.deepEqual(result[0], configs[1])
     assert.deepEqual(result[1], configs[2])
+  })
+
+  it('empty clause', () => {
+    const view = new View(complex)
+
+    const r1 = view
+      .get()
+      .where('x', {
+        empty: true,
+      })
+      .run()
+
+    const r2 = view
+      .get()
+      .where('x', {
+        empty: false,
+      })
+      .run()
+
+    const r3 = view
+      .get()
+      .where('x', {
+        not: {
+          empty: false,
+        },
+      })
+      .run()
+
+    assert.equal(r1[0].name, 'Coopa Uluru')
+    assert.equal(r1.length, 1)
+    assert.equal(r2.length, 2)
+    assert.equal(r3[0].name, 'Coopa Uluru')
+    assert.equal(r3.length, 1)
+  })
+
+  it('length clause (min)', () => {
+    const view = new View(complex)
+
+    const r1 = view
+      .get()
+      .where('hometown.city', {
+        len: {
+          min: 7,
+        },
+      })
+      .run()
+
+    assert.equal(r1[0].hometown.city, 'Houston')
+    assert.equal(r1.length, 1)
+  })
+
+  it('length clause (max)', () => {
+    const view = new View(complex)
+
+    const r1 = view
+      .get()
+      .where('hometown.city', {
+        len: {
+          max: 6,
+        },
+      })
+      .run()
+
+    assert.equal(r1[0].hometown.city, 'Athens')
+    assert.equal(r1.length, 2)
+  })
+
+  it('length clause (minmax)', () => {
+    const view = new View(complex)
+
+    const r1 = view
+      .get()
+      .where('hometown.country', {
+        len: {
+          min: 0,
+          max: 2,
+        },
+      })
+      .run()
+
+    // TODO: Mutators
+    // view.set('x').where('hometown.country', {
+    //   len: {
+    //     min: 0,
+    //     max: 2,
+    //   },
+    // })
+    assert.equal(r1[0].hometown.country, 'UK')
+    assert.equal(r1.length, 1)
   })
 })

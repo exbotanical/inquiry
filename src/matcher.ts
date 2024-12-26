@@ -4,6 +4,29 @@ import { ExtractTypeFromPath, Path, PlainObject, Predicate } from './types'
 import { getField } from './utils'
 
 export class Matcher {
+  // static email(expect: boolean) {
+  //   return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
+  //     const s = getField(el, fieldPath) as string
+  //     const valid = s.includes('@') // TODO:
+  //     return expect === valid
+  //   }
+  // }
+
+  static empty(expect: boolean) {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
+      const s = getField(el, fieldPath) as string
+      const valid = s === ''
+      return expect === valid
+    }
+  }
+
+  static len({ min, max }: { min?: number; max?: number }) {
+    return <T extends PlainObject>(el: T, fieldPath: Path<T>) => {
+      const n = (getField(el, fieldPath) as string).length
+      return (min == null || n >= min) && (max == null || n <= max)
+    }
+  }
+
   static not<T extends PlainObject>(match: Predicate<T>) {
     return (el: T, fieldPath: Path<T>) => !match(el, fieldPath)
   }
@@ -61,6 +84,8 @@ export class Matcher {
     }
   }
 
+  // If we call this statically, we'll need to pass <any,any>
+  // See: https://github.com/microsoft/TypeScript/issues/33133
   static filter<T extends PlainObject, P extends Path<T>>(
     fn: (viewData: ExtractTypeFromPath<T, P>) => boolean,
   ) {
